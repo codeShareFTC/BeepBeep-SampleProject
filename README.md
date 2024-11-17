@@ -1,4 +1,4 @@
-# Road Runner Quickstart
+# Beep Beep Sample project
 
-Check out the [docs](https://rr.brott.dev/docs/v1-0/tuning/).
+Check out the [readme](https://github.com/codeShareFTC/BeepBeep).
 
