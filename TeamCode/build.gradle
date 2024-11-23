@@ -29,7 +29,7 @@ repositories {
     }
 }
 
-apply from: '../build.RoardRunnerCommon.gradle'
+apply from: '../build.RoadRunnerCommon.gradle'
 
 dependencies {
     implementation project(':FtcRobotController')
