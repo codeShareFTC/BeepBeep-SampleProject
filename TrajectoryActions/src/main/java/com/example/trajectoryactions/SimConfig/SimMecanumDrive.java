@@ -1,6 +1,8 @@
 package com.example.trajectoryactions.SimConfig;
 
 
+import static com.acmerobotics.roadrunner.Actions.now;
+
 import com.acmerobotics.dashboard.canvas.Canvas;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.AccelConstraint;
@@ -24,7 +26,9 @@ import com.acmerobotics.roadrunner.VelConstraint;
 import java.util.Arrays;
 import java.util.List;
 
+
 public class SimMecanumDrive implements Drive {
+    static public int speed = 1;
     public static ParamsMecanumDrive PARAMS = new ParamsMecanumDrive();
 
     public final MecanumKinematics kinematics = new MecanumKinematics(
@@ -46,14 +50,14 @@ public class SimMecanumDrive implements Drive {
         this.pose = pose;
     }
 
-    public void setPose(Pose2d p) {this.pose = p;}; // CAW added
+    public void setPose(Pose2d p) {this.pose = p;} // CAW added
 
     public Pose2d getPose() {return this.pose;}
 
     public final class FollowTrajectoryAction implements Action {
         public final TimeTrajectory timeTrajectory;
         private double beginTs = -1;
-        private Pose2d endPose; // added for getEndPos()
+        int ticks = 0;
 
         private final double[] xPoints, yPoints;
 
@@ -71,16 +75,8 @@ public class SimMecanumDrive implements Drive {
                 xPoints[i] = p.position.x;
                 yPoints[i] = p.position.y;
             }
-
-            endPose = t.path.get(t.path.length(),1).value();// CAW added
         }
 
-        // CAW added this method to get the last postion,
-        // note this may not work in a trejectorySequence where initial Actions is smaller than total number of actions.
-        // I'm still learning roadrunner and not sure when there are more actions after initial actions?
-        public Pose2d getEndPos(){  // CAW added
-            return endPose;
-        }
 
         @Override
         public boolean run(TelemetryPacket p) {
@@ -88,10 +84,15 @@ public class SimMecanumDrive implements Drive {
             if (beginTs < 0) {
                 beginTs = Actions.now();
                 t = 0;
+                ticks = 0;
             } else {
-                t = Actions.now() - beginTs;
+                if (speed != 0) {
+                    t = (now() - beginTs) * speed;  // how long have we been running
+                } else {
+                    ticks++;
+                    t = ticks * .1;
+                }
             }
-
             if (t >= timeTrajectory.duration) {
                 return false;
             }
@@ -128,6 +129,7 @@ public class SimMecanumDrive implements Drive {
         private final TimeTurn turn;
 
         private double beginTs = -1;
+        private int ticks = 0;
 
         public TurnAction(TimeTurn turn) {
             this.turn = turn;
@@ -136,12 +138,22 @@ public class SimMecanumDrive implements Drive {
         @Override
         public boolean run(TelemetryPacket p) {
             double t;
+
             if (beginTs < 0) {
                 beginTs = Actions.now();
                 t = 0;
+                ticks = 0;
             } else {
-                t = Actions.now() - beginTs;
+                if (speed != 0) {
+                    t = (now() - beginTs) * speed;  // how long have we been running
+                } else {
+                    ticks++;
+                    t = ticks * .1;
+                }
             }
+
+
+
 
             if (t >= turn.duration) {
                 return false;

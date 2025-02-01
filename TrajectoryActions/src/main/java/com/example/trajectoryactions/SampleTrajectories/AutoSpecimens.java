@@ -11,6 +11,7 @@ import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.example.trajectoryactions.SimConfig.Drive;
+import com.example.trajectoryactions.SimConfig.SimViewStartMarker;
 
 public class AutoSpecimens extends commonTrajectories {
     Drive drive;
@@ -40,7 +41,7 @@ public class AutoSpecimens extends commonTrajectories {
         TrajectoryActionBuilder toObservationZone2 = toObservationZone1.endTrajectory().fresh()
                 .setReversed(false)
                 .splineToLinearHeading(transform(48,-48, Math.PI*3/2), xformHeading(Math.PI*3/2))
-                .waitSeconds(2)
+                //.waitSeconds(2)
                 .splineToLinearHeading(transform(endPos), xformHeading(Math.PI*1/2));
 
         return new SequentialAction(
@@ -75,20 +76,25 @@ public class AutoSpecimens extends commonTrajectories {
         return new SequentialAction(
                 d1,     // deliver preload, pick up 1st sample and take to  human to make specimen
                 d2,     // deliver 2nd specimena dn pick up sample and have human make specimen
+//                new SimViewStartMarker(),
                 park    // no time to deliver, go park.
         );
     }
-
     public  SequentialAction actionTest(){
         return new SequentialAction(
-                actionParameters.collectSample,
-                actionParameters.liftUp,
-                actionParameters.deliverSample,
-                actionParameters.liftDown,
-                actionParameters.collectSample,
-                actionParameters.liftUp,
-                actionParameters.deliverSample,
-                actionParameters.liftDown
+                new SimTimedAction("A 10 second", 5.0),
+                new SimViewStartMarker(),
+                new SimTimedAction("B 10 second", 5.0)
+
+//                drive.actionBuilder(new Pose2d(0,0,0)).turn(Math.PI*6).build()
+//                actionParameters.collectSample,
+//                actionParameters.liftUp,
+//                actionParameters.deliverSample,
+//                actionParameters.liftDown,
+//                actionParameters.collectSample,
+//                actionParameters.liftUp,
+//                actionParameters.deliverSample,
+//                actionParameters.liftDown
         );
     }
 

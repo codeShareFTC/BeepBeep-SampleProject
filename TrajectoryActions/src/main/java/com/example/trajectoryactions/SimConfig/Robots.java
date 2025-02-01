@@ -11,12 +11,17 @@ public class Robots {
 
     public ArrayList<SimRobot> simRobots = new ArrayList<>();
 
+    public void setSpeed(int value) {
+        commonTrajectories.speed=value;
+        SimMecanumDrive.speed=value;
+    }
+
     public enum FieldBackground {
         centerStage,
         intoTheDeep
     }
-    public FieldBackground background = FieldBackground.intoTheDeep;  // define this variable to set the background
 
+    public FieldBackground background = FieldBackground.intoTheDeep;  // define this variable to set the background
 
     public Robots() {
         // add puts robot into menu
@@ -28,12 +33,10 @@ public class Robots {
 
         simRobots.add(new RedAutoSpecimens(true));
         simRobots.add(new BlueAutoSpecimens(true));
-
-
     }
 
     public void startGameTimer() {
-//        wgwABCommon.startGameTimer();
+
     }
 
     private class RedSideAllYellows extends SimRobot {

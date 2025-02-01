@@ -13,10 +13,12 @@ public class commonTrajectories {
     static public Pose2d startPosA4 = new Pose2d( 16,  63.5, Math.toRadians(270));
     static public Pose2d startPosF2 = new Pose2d(-36, -63.5, Math.toRadians(90));
     static public Pose2d startPosF4 = new Pose2d( 16, -63.5, Math.toRadians(270));
+    static public int speed = 1;
+
 
     public enum FieldSide {RED, BLUE}
 
-    Drive drive = null;  // this was static but that won't work with multiple robots in simulator
+    Drive drive;  // this was static but that won't work with multiple robots in simulator
 
     public commonTrajectories(Drive d){
         drive = d;
@@ -47,6 +49,7 @@ public class commonTrajectories {
         private double t = 0.0;         // time this action has been running
         private double dt;        // total time for this action to run
         private final String msg;
+        private int ticks=0;
 
         SimTimedAction(String message, double deltaTime) {
             msg = message;
@@ -57,13 +60,20 @@ public class commonTrajectories {
         public boolean run(TelemetryPacket p) {
             if(beginTs < 0){        // first time to run
                 beginTs = now();    // record time we start running
+                ticks = 1;
             } else {
-                t = now()-beginTs;  // how long have we been running
+                ticks++;
+                if (speed != 0) {
+                    t = (now() - beginTs) * speed;  // how long have we been running
+                } else {
+                    t = ticks * .1;
+
+                }
             }
             String formatedStr = String.format(msg + " %.2f of ", t); //hijacking to send 2 vals
             p.put(formatedStr, dt);
 
-            boolean retVal = t < dt;    // reset so timer can be run again
+            boolean retVal = (t <= dt);    // reset so timer can be run again
             if (! retVal){
                 beginTs = -1;
                 t = 0;
@@ -73,8 +83,9 @@ public class commonTrajectories {
         }
 
         @Override
-        public void preview(Canvas c) {}  // not used, but template reequired it to.
+        public void preview(Canvas c) {}  // not used, but template required it to.
     }
+
 
     // needs to be in this or other common class accessible by robot & simulator
     // initialize the actions to simulator actions. robot.init can change these to robot actions
